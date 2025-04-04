@@ -49,8 +49,8 @@ RUN python -m venv /venv && \
   chown -R duser:duser /data/web/static && \
   chown -R duser:duser /data/web/media && \
     # mudando a permissão das pastas para 755
-  chmod -R 755 /data/web/static && \
-  chmod -R 755 /data/web/media && \
+  # chmod -R 777 /data/web/static && \
+  # chmod -R 777 /data/web/media && \
     # +x para executar somento com o nome do arquivo
   chmod -R +x /scripts
 
