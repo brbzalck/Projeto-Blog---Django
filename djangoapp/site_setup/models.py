@@ -20,3 +20,26 @@ class MenuLink(models.Model):
     # definindo o retorno do método como str legível
     def __str__(self):
         return self.text
+
+# criando model SiteSetup
+class SiteSetup(models.Model):
+    class Meta:
+        verbose_name = 'Setup'
+        verbose_name_plural = 'Setup'
+
+    # Definindo coluna título e descrição
+    title = models.CharField(max_length=65)
+    description = models.CharField(max_length=255)
+
+    # Exibindo campos de header, search, menu, description, pagination e footer
+    show_header = models.BooleanField(default=True)
+    show_search = models.BooleanField(default=True)
+    show_menu = models.BooleanField(default=True)
+    show_description = models.BooleanField(default=True)
+    show_pagination = models.BooleanField(default=True)
+    show_footer = models.BooleanField(default=True)
+
+
+    # definindo o retorno do método como str legível
+    def __str__(self):
+        return self.title
