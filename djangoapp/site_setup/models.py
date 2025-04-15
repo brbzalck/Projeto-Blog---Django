@@ -17,6 +17,13 @@ class MenuLink(models.Model):
     # abriu em nova aba
     new_tab = models.BooleanField(default=False)
 
+    # Adicionando a model MenuLink como ForeignKey de SiteSetup
+    # ela pertence a site setup (um site tem vários links)
+    site_setup = models.ForeignKey(
+        # Selecionando qual Model se trata, modo cascata para deleção, podendo ser vazio, nulo e default
+        'SiteSetup', on_delete=models.CASCADE, blank=True, null=True, default=None,
+    )
+
     # definindo o retorno do método como str legível
     def __str__(self):
         return self.text
