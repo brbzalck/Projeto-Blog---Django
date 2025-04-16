@@ -74,6 +74,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # registrando função no processador de contexto
+                'site_setup.context_processors.context_processor_example',
+                # agora qualquer template tem acesso a variável site_setup
+                'site_setup.context_processors.site_setup',
             ],
         },
     },
