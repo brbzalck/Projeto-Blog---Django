@@ -43,14 +43,14 @@ RUN python -m venv /venv && \
     # criando a pasta static
   mkdir -p /data/web/static && \
     # criando a pasta media
-  mkdir -p /data/web/media && \
+  mkdir -p /data/web/media/assets/favicon && \
     # modificando quem criou as pastas venv, static e media
   chown -R duser:duser /venv && \
   chown -R duser:duser /data/web/static && \
   chown -R duser:duser /data/web/media && \
     # mudando a permissão das pastas para 755
-  # chmod -R 777 /data/web/static && \
-  # chmod -R 777 /data/web/media && \
+  chmod -R 755 /data/web/static && \
+  chmod -R 755 /data/web/media && \
     # +x para executar somento com o nome do arquivo
   chmod -R +x /scripts
 

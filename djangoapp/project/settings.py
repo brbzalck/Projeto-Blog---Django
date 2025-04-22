@@ -144,6 +144,10 @@ MEDIA_URL = '/media/'
 # caminho dos arquivos de mídia
 MEDIA_ROOT = DATA_DIR / 'media'
 
+
+FILE_UPLOAD_PERMISSIONS = 0o644
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

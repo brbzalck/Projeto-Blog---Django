@@ -1,4 +1,6 @@
 from django.db import models
+import os
+from django.conf import settings
 
 # Create your models here.
 from django.db import models
@@ -46,6 +48,26 @@ class SiteSetup(models.Model):
     show_pagination = models.BooleanField(default=True)
     show_footer = models.BooleanField(default=True)
 
+    favicon = models.ImageField(
+        upload_to='assets/favicon/',
+        blank=True, default=''
+    )
+ 
+    def save(self, *args, **kwargs):
+        # Se está atualizando e tem um favicon existente
+        if self.pk and self.favicon:
+            old_instance = SiteSetup.objects.get(pk=self.pk)
+            if old_instance.favicon and old_instance.favicon != self.favicon:
+                # Remove o arquivo antigo
+                old_instance.favicon.delete(save=False)
+        
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Remove o arquivo quando o objeto é deletado
+        if self.favicon:
+            self.favicon.delete(save=False)
+        super().delete(*args, **kwargs)
 
     # definindo o retorno do método como str legível
     def __str__(self):
