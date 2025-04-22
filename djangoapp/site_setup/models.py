@@ -1,6 +1,8 @@
 from django.db import models
 import os
 from django.conf import settings
+from utils.images import resize_image
+from utils.model_validators import validate_png
 
 # Create your models here.
 from django.db import models
@@ -50,18 +52,20 @@ class SiteSetup(models.Model):
 
     favicon = models.ImageField(
         upload_to='assets/favicon/',
-        blank=True, default=''
+        blank=True, default='',
+        validators=[validate_png],
     )
  
     def save(self, *args, **kwargs):
-        # Se está atualizando e tem um favicon existente
-        if self.pk and self.favicon:
-            old_instance = SiteSetup.objects.get(pk=self.pk)
-            if old_instance.favicon and old_instance.favicon != self.favicon:
-                # Remove o arquivo antigo
-                old_instance.favicon.delete(save=False)
-        
+        current_favicon_name = str(self.favicon.name)
         super().save(*args, **kwargs)
+        favicon_changed = False
+
+        if self.favicon:
+            favicon_changed = current_favicon_name != self.favicon.name
+
+        if favicon_changed:
+            resize_image(self.favicon, 32)
 
     def delete(self, *args, **kwargs):
         # Remove o arquivo quando o objeto é deletado

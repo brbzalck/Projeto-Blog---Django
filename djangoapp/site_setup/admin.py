@@ -35,10 +35,6 @@ class SiteSetupAdmin(admin.ModelAdmin):
     # adicionando como table imbutida MenuLinkInline ao SiteSetup para modificações simuntâneas SiteSetup/MenuLink
     inlines = MenuLinkInline,
 
-    class Media:
-        css = {'all': ['admin/css/hide_cleared_file.css']}
-        js = ('admin/js/fix_favicon_clear.js',)
-
     # Adiciona isso para permitir a remoção do favicon
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
