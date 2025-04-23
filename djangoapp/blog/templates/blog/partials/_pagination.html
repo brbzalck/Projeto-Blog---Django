@@ -1,4 +1,5 @@
 {% if page_obj and page_obj.has_other_pages %}
+{% comment %} verificando se tem página e outras páginas {% endcomment %}
 
 <div class="separator"></div>
 
@@ -8,6 +9,7 @@
 
       <nav class="pagination-links" aria-label="Pagination">
         <span class="step-links">
+            {% comment %} se tiver página anterior {% endcomment %}
             {% if page_obj.has_previous %}
               <a title="Page 1" aria-label="Page 1" href="?page=1{{ search_url }}">
                   <i class="fa-solid fa-backward-fast"></i>
@@ -24,7 +26,7 @@
             <span class="current" title="Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}" aria-current="page">
               {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
             </span>
-
+            {% comment %} se tiverr página posterior {% endcomment %}
             {% if page_obj.has_next %}
               <a title="Page {{ page_obj.next_page_number }}" aria-label="Page {{ page_obj.next_page_number }}" href="?page={{ page_obj.next_page_number }}{{ search_url }}">
                 <i class="fa-solid fa-circle-chevron-right"></i>

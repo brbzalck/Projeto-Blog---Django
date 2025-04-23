@@ -4,8 +4,11 @@ from django.shortcuts import render
 posts = list(range(1000))
 
 def index(request):
+    # mandando para a view post 9 posts.
     paginator = Paginator(posts, 9)
+    # pegando o número de páginas
     page_number = request.GET.get("page")
+    # pegando a pagina atual
     page_obj = paginator.get_page(page_number)
 
     return render(
@@ -17,8 +20,11 @@ def index(request):
     )
 
 def page(request):
+    # mandando para a view post 9 posts.
     paginator = Paginator(posts, 9)
+    # pegando o número de páginas
     page_number = request.GET.get("page")
+    # pegando a pagina atual
     page_obj = paginator.get_page(page_number)
 
     return render(
@@ -30,8 +36,11 @@ def page(request):
     )
 
 def post(request):
+    # mandando para a view post 9 posts.
     paginator = Paginator(posts, 9)
+    # pegando o número de páginas
     page_number = request.GET.get("page")
+    # pegando a pagina atual
     page_obj = paginator.get_page(page_number)
     
     return render(
