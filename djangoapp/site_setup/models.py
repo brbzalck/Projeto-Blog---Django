@@ -26,6 +26,8 @@ class MenuLink(models.Model):
     site_setup = models.ForeignKey(
         # Selecionando qual Model se trata, modo cascata para deleção, podendo ser vazio, nulo e default
         'SiteSetup', on_delete=models.CASCADE, blank=True, null=True, default=None,
+        # nome de acesso fora do model
+        related_name='menu'
     )
 
     # definindo o retorno do método como str legível

@@ -1,5 +1,6 @@
 from django.db import models
 from utils.rands import slugify_new
+from django.contrib.auth.models import User
 
 # Create your models here.
 # Criando a table Tag que guarda as tags do site
@@ -75,3 +76,71 @@ class Page(models.Model):
     
     def __str__(self) -> str:
         return self.title
+
+class Post(models.Model):
+    class Meta:
+        verbose_name = 'Post'
+        verbose_name_plural = 'Posts'
+
+    title = models.CharField(max_length=65,)
+    slug = models.SlugField(
+        unique=True, default="",
+        null=False, blank=True, max_length=255
+    )
+    # Resumod do post
+    excerpt = models.CharField(max_length=150)
+    is_published = models.BooleanField(
+        default=False,
+        help_text=(
+            'Este campo precisará estar marcado '
+            'para o post ser exibido publicamente.'
+        ),
+    )
+    # aqui fica o html
+    content = models.TextField()
+    # capa do post!!!
+    cover = models.ImageField(upload_to='posts/%Y/%m/', blank=True, default='')
+
+    cover_in_post_content = models.BooleanField(
+        default=True,
+        help_text='Se marcado, exibirá a capa dentro do post.',
+    )
+    # (adiciona data de criação)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # user.post_created_by.all -> assm que irei acessar esse valor no html
+    created_by = models.ForeignKey(
+        # pegando o usuárioo que criou
+        User,
+        # se deletar deixa os post
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        # nome relacionado para acesso no html
+        related_name='post_created_by'
+    )
+    # atualiza data de criação
+    updated_at = models.DateTimeField(auto_now=True)
+    # user.post_updated_by.all -> assm que irei acessar esse valor no html
+    updated_by = models.ForeignKey(
+        # selecionando qual model se trata
+        User,
+        # não dependente
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        # nome para acesso fora do models
+        related_name='post_updated_by'
+    )
+    # O Post tem relação com a Categoria(pk>Category -> post), mas não depende dela para viver
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True,
+        default=None,
+    )
+    # relação de tags pode ter muitos post e vice versa
+    tags = models.ManyToManyField(Tag, blank=True, default='')
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify_new(self.title, 4)
+        return super().save(*args, **kwargs)
