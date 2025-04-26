@@ -60,3 +60,14 @@ class PostAdmin(admin.ModelAdmin):
         "slug": ('title',),
     }
     autocomplete_fields = 'tags', 'category',
+
+    # o metodo save_model tem acesso ao obj
+    def save_model(self, request, obj, form, change):
+        # change = mudar
+        # se foi feita alterções, vai para o campo updated_by de obj
+        if change:
+            obj.updated_by = request.user
+        # ao salvar se não tiver mudança é porque criou
+        else:
+            obj.created_by = request.user
+        obj.save()
