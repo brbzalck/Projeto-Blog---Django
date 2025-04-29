@@ -44,6 +44,7 @@ RUN python -m venv /venv && \
   mkdir -p /data/web/static && \
     # criando a pasta media
   mkdir -p /data/web/media/assets/favicon && \
+  mkdir -p /data/web/media/posts && \
     # modificando quem criou as pastas venv, static e media
   chown -R duser:duser /venv && \
   chown -R duser:duser /data/web/static && \

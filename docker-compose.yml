@@ -12,6 +12,7 @@ services:
       - static_volume:/data/web/static/
       - media_volume:/data/web/media/
       - ./data/web/media/assets/favicon:/data/web/media/assets/favicon
+      - ./data/web/media/posts:/data/web/media/posts
     env_file:
       - ./dotenv_files/.env
     depends_on:
