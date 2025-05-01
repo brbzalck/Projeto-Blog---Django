@@ -23,6 +23,8 @@ from django.urls import path, include
 urlpatterns = [
     # puxando o nosso próprio arquivo urls para raiz do site
     path('', include('blog.urls')),
+    # colocando seu path summernote para a urls do app
+    path('summernote/', include('django_summernote.urls')),
     path('admin/', admin.site.urls),
 ]
 

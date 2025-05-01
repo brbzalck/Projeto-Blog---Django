@@ -1,5 +1,6 @@
 from django.contrib import admin
 from blog.models import Tag, Category, Page, Post
+from django_summernote.admin import SummernoteModelAdmin
 
 # Register your models here.
 # Registrando no admin o campo Tag
@@ -32,7 +33,9 @@ class CategoryAdmin(admin.ModelAdmin):
 # Registrando Page no admin
 @admin.register(Page)
 # com as seguintes informações de exibição
-class PageAdmin(admin.ModelAdmin):
+class PageAdmin(SummernoteModelAdmin):
+    # colocando os campos de summernote no content atribuido pelo models
+    summernote_fields = ('content',)
     list_display = 'id', 'title', 'is_published',
     list_display_links = 'title',
     search_fields = 'id', 'slug', 'title', 'content',
@@ -47,7 +50,9 @@ class PageAdmin(admin.ModelAdmin):
 # Registrando na admin do django o Post
 @admin.register(Post)
 # Definindo como o campo será exibido
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(SummernoteModelAdmin):
+    # colocando os campos de summernote no content atribuido pelo models
+    summernote_fields = ('content',)
     list_display = 'id', 'title', 'is_published',  'created_by',
     list_display_links = 'title',
     search_fields = 'id', 'slug', 'title', 'excerpt', 'content',

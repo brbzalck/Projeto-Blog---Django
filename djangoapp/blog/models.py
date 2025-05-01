@@ -2,6 +2,33 @@ from django.db import models
 from utils.rands import slugify_new
 from django.contrib.auth.models import User
 from utils.images import resize_image
+from django_summernote.models import AbstractAttachment
+
+# Classe que configura nosso próprio Attachment para armazenar dados
+class PostAttachment(AbstractAttachment):
+    def save(self, *args, **kwargs):
+        # se não tiver nome, salva com o nome do próprio arquivo
+        if not self.name:
+            self.name = self.file.name
+
+        # salvando numa variável str o nome do arquivo
+        current_file_name = str(self.file.name)
+        # salvando de fao
+        super_save = super().save(*args, **kwargs)
+        # arquivo não foi mudado ainda.
+        file_changed = False
+
+        # se o arquivo existir
+        if self.file:
+            # file changed = se o nome do arquivo for diferente do recebido
+            file_changed = current_file_name != self.file.name
+        # e se o arquivo for mudado
+        if file_changed:
+            # deixa ele menor para não ocupar muito espaço
+            resize_image(self.file, 900, True, 70)
+        # agora sim salva :)
+        return super_save
+
 
 # Create your models here.
 # Criando a table Tag que guarda as tags do site
