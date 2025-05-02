@@ -9,8 +9,8 @@ services:
       - 8000:8000
     volumes:
       - ./djangoapp:/djangoapp
-      - static_volume:/data/web/static/
-      - media_volume:/data/web/media/
+      - static_volume:/data/web/static
+      - media_volume:/data/web/media
       - ./data/web/media/assets/favicon:/data/web/media/assets/favicon
       - ./data/web/media/posts:/data/web/media/posts
     env_file:
