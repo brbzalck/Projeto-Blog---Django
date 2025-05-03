@@ -6,6 +6,7 @@ app_name = 'blog'
 
 urlpatterns = [
     path('', index, name='index'),
-    path('post/', post, name='post'),
+    # caminho da url se o usuário clicar em algum post, + slug recebida pelo href post.slug, requisita view post
+    path('post/<slug:slug>', post, name='post'),
     path('page/', page, name='page'),
 ]

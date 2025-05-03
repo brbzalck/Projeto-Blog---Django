@@ -1,11 +1,15 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render
+from blog.models import Post
 
-posts = list(range(1000))
+PER_PAGE = 9
 
 def index(request):
+    # pegando no banmco as publicações public True em ordem decrescente
+    posts = Post.objects.filter(is_published=True).order_by('-pk')
+
     # mandando para a view post 9 posts.
-    paginator = Paginator(posts, 9)
+    paginator = Paginator(posts, PER_PAGE)
     # pegando o número de páginas
     page_number = request.GET.get("page")
     # pegando a pagina atual
@@ -20,13 +24,6 @@ def index(request):
     )
 
 def page(request):
-    # mandando para a view post 9 posts.
-    paginator = Paginator(posts, 9)
-    # pegando o número de páginas
-    page_number = request.GET.get("page")
-    # pegando a pagina atual
-    page_obj = paginator.get_page(page_number)
-
     return render(
         request,
         'blog/pages/page.html',
@@ -36,13 +33,6 @@ def page(request):
     )
 
 def post(request):
-    # mandando para a view post 9 posts.
-    paginator = Paginator(posts, 9)
-    # pegando o número de páginas
-    page_number = request.GET.get("page")
-    # pegando a pagina atual
-    page_obj = paginator.get_page(page_number)
-    
     return render(
         request,
         'blog/pages/post.html',

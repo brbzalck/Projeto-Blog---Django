@@ -6,8 +6,8 @@
       <div class="section-gap">
 
         <div class="card-grid">
-            {% comment %} fazendo um for fictício de 1 a 9 para os cards da home {% endcomment %}
-          {% for i in ""|ljust:"9" %}
+            {% comment %} fazendo um for no page_obj passado pela view index {% endcomment %}
+          {% for post in page_obj %}
             {% include 'blog/partials/_post-card.html' with i=forloop.counter0 %}
           {% endfor %}
         </div>
