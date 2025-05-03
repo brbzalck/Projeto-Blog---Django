@@ -5,8 +5,8 @@ from blog.models import Post
 PER_PAGE = 9
 
 def index(request):
-    # pegando no banmco as publicações public True em ordem decrescente
-    posts = Post.objects.filter(is_published=True).order_by('-pk')
+    # pegando no banco com objects as publicações public True em ordem decrescente
+    posts = Post.objects.get_published()
 
     # mandando para a view post 9 posts.
     paginator = Paginator(posts, PER_PAGE)

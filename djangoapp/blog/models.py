@@ -105,10 +105,22 @@ class Page(models.Model):
     def __str__(self) -> str:
         return self.title
 
+# sobrecrevendo o models.Manager com minha nova função adicional(quebra-galho)
+class PostManager(models.Manager):
+    # vê se ta publicado e puxa os posts de forma decrescente
+    def get_published(self):
+        return self\
+            .filter(is_published=True)\
+            .order_by('-pk')
+
+
 class Post(models.Model):
     class Meta:
         verbose_name = 'Post'
         verbose_name_plural = 'Posts'
+
+    # passando minha nova class com método adicional para objects
+    objects = PostManager()
 
     title = models.CharField(max_length=65,)
     slug = models.SlugField(
