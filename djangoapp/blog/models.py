@@ -3,6 +3,7 @@ from utils.rands import slugify_new
 from django.contrib.auth.models import User
 from utils.images import resize_image
 from django_summernote.models import AbstractAttachment
+from django.urls import reverse
 
 # Classe que configura nosso próprio Attachment para armazenar dados
 class PostAttachment(AbstractAttachment):
@@ -179,6 +180,15 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+    # 
+    def get_absolute_url(self):
+        # se não tiver marcado como publicado
+        if not self.is_published:
+            # retorna a url de volta ao index para não dar erro
+            return reverse('blog:index')
+        # caso esteja publicado, joga a url de post + slug do meu objeto como Argumento
+        return reverse('blog:post', args=(self.slug,))
 
     def save(self, *args, **kwargs):
         if not self.slug:
