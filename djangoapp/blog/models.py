@@ -108,7 +108,7 @@ class Page(models.Model):
 
 # sobrecrevendo o models.Manager com minha nova função adicional(quebra-galho)
 class PostManager(models.Manager):
-    # vê se ta publicado e puxa os posts de forma decrescente
+    # vê se ta publicado e puxa os posts de forma decrescente do banco de dados
     def get_published(self):
         return self\
             .filter(is_published=True)\
