@@ -64,6 +64,25 @@ def category(request, slug):
             'page_obj': page_obj,
         }
     )
+# view que mostra os post com determinadas tags
+def tag(request, slug):
+    # pegando no banco com objects as publicações public True E que tenha a slug da tag = slug qu vem da URL
+    posts = Post.objects.get_published().filter(tags__slug=slug)
+
+    # mandando para a view post 9 posts.
+    paginator = Paginator(posts, PER_PAGE)
+    # pegando o número de páginas
+    page_number = request.GET.get("page")
+    # pegando a pagina atual
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        'blog/pages/index.html',
+        {
+            'page_obj': page_obj,
+        }
+    )
 
 def page(request, slug):
     return render(
