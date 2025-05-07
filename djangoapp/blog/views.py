@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from blog.models import Post
+from django.db.models import Q
 
 PER_PAGE = 9
 
@@ -81,6 +82,32 @@ def tag(request, slug):
         'blog/pages/index.html',
         {
             'page_obj': page_obj,
+        }
+    )
+# view que mostra o resultado do search
+def search(request):
+    # o valor de pesquisa será pego na requisição do get de name 'search', com exclusão dos espaços em branco
+    search_value = request.GET.get('search', '').strip()
+
+    # pegando no banco com objects as publicações public True E que contenha título, excerpt, e conteúdo = valor da pesquisa
+    posts = (
+        Post.objects.get_published()
+            .filter(
+                Q(title__icontains=search_value) |
+                Q(excerpt__icontains=search_value) |
+                Q(content__icontains=search_value)
+            )[:PER_PAGE]
+            # exibi somente 9
+        )
+
+    return render(
+        request,
+        'blog/pages/index.html',
+        {
+            # mandando o resultado da query para a render
+            'page_obj': posts,
+            # mandando o valor de pesquisa
+            'search_value': search_value,
         }
     )
 

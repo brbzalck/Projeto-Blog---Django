@@ -15,7 +15,8 @@
         {% comment %} Verificação de check pelo site_setup atribuido por context {% endcomment %}
         {% if site_setup.show_search %}
           <div class="search pb-base center">
-            <form class="search-form" action="#" method="get">
+            {% comment %} formulário puxa a view search e tem o método get para transferir input {% endcomment %}
+            <form class="search-form" action="{% url "blog:search" %}" method="get">
               <div class="search-content">
                 <label class="sr-only" id="search-label" for="search-input">Search</label>
                 <input
@@ -24,7 +25,8 @@
                   name="search"
                   id="search-input"
                   placeholder="Search"
-                  value="Non risu potius quam oratione eiciendum? Quo pleb "
+                  {% comment %} valor é igual as search_value passado pelo contexto {% endcomment %}
+                  value="{{ search_value }}"
                 >
                 <button class="search-btn" type="submit" aria-labelledby="search-label">
                   <i class="fa fa-search"></i>
