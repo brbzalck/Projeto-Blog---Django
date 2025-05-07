@@ -2,6 +2,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 from blog.models import Post, Page
 from django.db.models import Q
+from django.contrib.auth.models import User
+from django.http import Http404
 
 PER_PAGE = 9
 
@@ -23,13 +25,30 @@ def index(request):
         'blog/pages/index.html',
         {
             'page_obj': page_obj,
+            'page_title': 'Home - ',
         }
     )
 
 # view que exibe quem criou
 def created_by(request, author_pk):
+    # pegando o usuário do banco onde a pk da table é igual a pk do autor que vem da URL
+    user = User.objects.filter(pk=author_pk).first()
+
+    # se não existir usuário levanta um erro
+    if user is None:
+        raise Http404()
+
     # pegando no banco com objects as publicações public True E que tenham a pk de quem criou = pk que vem da URL
     posts = Post.objects.get_published().filter(created_by__pk=author_pk)
+    # criando um full name a partir do dado da column username
+    user_full_name = user.username
+
+    # se tiver first name, dale robertin
+    if user.first_name:
+        # concatenando primeiro e sobrenome na variável(editando ela)
+        user_full_name = f'{user.first_name} {user.last_name}'
+    # Concatenando a título da página com nome de usuário
+    page_title = 'Posts de ' + user_full_name + ' - '
 
     # mandando para a view post 9 posts.
     paginator = Paginator(posts, PER_PAGE)
@@ -43,6 +62,8 @@ def created_by(request, author_pk):
         'blog/pages/index.html',
         {
             'page_obj': page_obj,
+            # passando no contexto que vai para o renderização o nome da página
+            'page_title': page_title,
         }
     )
 
@@ -58,11 +79,20 @@ def category(request, slug):
     # pegando a pagina atual
     page_obj = paginator.get_page(page_number)
 
+    # se não existir categoria levanta erro
+    if len(page_obj) == 0:
+        raise Http404()    
+
+    # título da página é pego pelo peimeiro post página onde a categoria associada a ele tem determinado nome
+    page_title = f'{page_obj[0].category.name} - Categoria - '
+
     return render(
         request,
         'blog/pages/index.html',
         {
             'page_obj': page_obj,
+            # passando no contexto que vai para o renderização o nome da página
+            'page_title': page_title,
         }
     )
 # view que mostra os post com determinadas tags
@@ -77,11 +107,20 @@ def tag(request, slug):
     # pegando a pagina atual
     page_obj = paginator.get_page(page_number)
 
+    # se não existir tags levanta erro
+    if len(page_obj) == 0:
+        raise Http404()   
+     
+    # título da página é pego pelo peimeiro post da página onde a tag associada a ele tem determinado nome
+    page_title = f'{page_obj[0].tags.first().name} - Tags - '
+
     return render(
         request,
         'blog/pages/index.html',
         {
             'page_obj': page_obj,
+            # passando no contexto que vai para o renderização o nome da página
+            'page_title': page_title,
         }
     )
 # view que mostra o resultado do search
@@ -99,6 +138,8 @@ def search(request):
             )[:PER_PAGE]
             # exibi somente 9
         )
+    # título da página é o serach_value com o máximo de 30 caracteres
+    page_title = f'{search_value[:30]} - Search - '
 
     return render(
         request,
@@ -108,30 +149,50 @@ def search(request):
             'page_obj': posts,
             # mandando o valor de pesquisa
             'search_value': search_value,
+            # passando no contexto que vai para o renderização o nome da página
+            'page_title': page_title,
         }
     )
 
 # view page que pega página publicada E vê qual slug do site é = slug da URL
 def page(request, slug):
-    page = Page.objects.filter(is_published=True).filter(slug=slug).first()
+    page_obj = Page.objects.filter(is_published=True).filter(slug=slug).first()
+
+    # se não existir página levanta erro
+    if page_obj is None:
+        raise Http404()    
+
+    # pegando o título assiciado a página criada na admin
+    page_title = f'{page_obj.title} - Página - '
 
     return render(
         request,
         'blog/pages/page.html',
         {
             # joga pro contexto o resultado da query
-            'page': page,
+            'page': page_obj,
+            # passando no contexto que vai para o renderização o nome da página
+            'page_title': page_title,
         }
     )
 
 def post(request, slug):
     # pegando do banco se estiver publicado onde a slug é igual a slug recebida da URL
-    post = Post.objects.get_published().filter(slug=slug).first()
+    post_obj = Post.objects.get_published().filter(slug=slug).first()
+    
+    # se não existir post levanta erro
+    if post_obj is None:
+        raise Http404()    
+
+    # título da aba é igual ao título associado ao post no momento de sua criação
+    page_title = f'{post_obj.title} - Post - '
 
     return render(
         request,
         'blog/pages/post.html',
         {
-            'post': post,
+            'post': post_obj,
+            # passando no contexto que vai para o renderização o nome da página
+            'page_title': page_title,
         }
     )
