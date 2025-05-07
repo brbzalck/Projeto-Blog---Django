@@ -9,6 +9,7 @@ urlpatterns = [
     # caminho da url se o usuário clicar em algum post, + slug recebida pelo href post.slug, requisita view post
     path('post/<slug:slug>/', post, name='post'),
     path('page/<slug:slug>/', page, name='page'),
+    # url created_by/id do criador/ , que puxa a view created_by de nome created_by
     path('created_by/<int:author_pk>/', created_by, name='created_by'),
     path('category/<slug:slug>/', category, name='category'),
 ]

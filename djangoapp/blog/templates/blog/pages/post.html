@@ -16,12 +16,16 @@
 
       <div class="post-meta pb-base">
         <div class="post-meta-item">
+          {% comment %} link que renderiza view created_by, com determinada pk do criador do post {% endcomment %}
           <a class="post-meta-link" href="{% url "blog:created_by" post.created_by.pk %}">
             <i class="fa-solid fa-user"></i>
             <span>
+              {% comment %} so o criador do post tiver frist name {% endcomment %}
               {% if post.created_by.first_name %}
+                {% comment %} coloca no campo de Autor demarcado pela div css {% endcomment %}
                 {{ post.created_by.first_name }}
                 {{ post.created_by.last_name }}
+              {% comment %} se não tiver vai o nome de user msm {% endcomment %}
               {% else %}
                 {{ post.created_by.username }}
               {% endif %}
@@ -38,9 +42,11 @@
         </div>
         {% if post.category %}
           <div class="post-meta-item">
+            {% comment %} puxa a view category, com uma categoria atrelada ao post já em slug {% endcomment %}
             <a class="post-meta-link" href="{% url "blog:category" post.category.slug %}">
               <i class="fa-solid fa-tag"></i>
               <span>
+                {% comment %} pegando o nome da categoria pela ForeignKey {% endcomment %}
                 {{ post.category.name }}
               </span>
             </a>

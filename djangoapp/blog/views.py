@@ -75,6 +75,7 @@ def page(request, slug):
     )
 
 def post(request, slug):
+    # pegando do banco se estiver publicado onde a slug é igual a slug recebida da URL
     post = Post.objects.get_published().filter(slug=slug).first()
 
     return render(
