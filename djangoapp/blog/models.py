@@ -96,6 +96,15 @@ class Page(models.Model):
     )
     content = models.TextField()
 
+    # método que pega a url se estiver publicado com a slug de determinada page
+    def get_absolute_url(self):
+        # se não tiver marcado como publicado
+        if not self.is_published:
+            # retorna a url de volta ao index para não dar erro
+            return reverse('blog:index')
+        # caso esteja publicado, joga a url de page + slug do meu objeto como Argumento
+        return reverse('blog:page', args=(self.slug,))
+
     # ao salvar, executamos nosso método slugify_new
     def save(self, *args, **kwargs):
         if not self.slug:
