@@ -4,10 +4,11 @@
   <main class="main-content section-wrapper">
     <div class="section-content-wide">
       <div class="section-gap">
-        {% if page_obj %}
+        {% comment %} pegando os posts do ListView(context_object_name) {% endcomment %}
+        {% if posts %}
           <div class="card-grid">
               {% comment %} fazendo um for no page_obj passado pela view index {% endcomment %}
-            {% for post in page_obj %}
+            {% for post in posts %}
               {% comment %} incluindo os post card um a um {% endcomment %}
               {% include 'blog/partials/_post-card.html' with i=forloop.counter0 %}
             {% endfor %}

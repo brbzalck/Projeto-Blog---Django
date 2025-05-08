@@ -4,30 +4,62 @@ from blog.models import Post, Page
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.http import Http404
+from django.views.generic import ListView
 
 PER_PAGE = 9
 
-# views, urls, post, models
+# sobrescrevendo list view
+class PostListView(ListView):
+    # definindo qual model(banco)
+    model = Post
+    # definindo qual template utilizar na renderização
+    template_name = 'blog/pages/index.html'
+    # definindo como que vou acessar os dados no template(html)
+    context_object_name = 'posts'
+    # colocando em ordem de criação(mais novo primeiro)
+    ordering = '-pk',
+    # definindo quantas páginas por vez
+    paginate_by = PER_PAGE
+    # query set padrão começa verificando se está publicada
+    queryset = Post.objects.get_published()
+    
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     queryset = queryset.filter(is_published=True)
+    #     return queryset
+        
+    # sobrescrevendo o método de ListView que pega o contexto que vai para o template
+    def get_context_data(self, **kwargs):
+        # salvando o contexto numa variável para edição
+        context = super().get_context_data(**kwargs)
 
-def index(request):
-    # pegando no banco com objects as publicações public True em ordem decrescente
-    posts = Post.objects.get_published()
-
-    # mandando para a view post 9 posts.
-    paginator = Paginator(posts, PER_PAGE)
-    # pegando o número de páginas
-    page_number = request.GET.get("page")
-    # pegando a pagina atual
-    page_obj = paginator.get_page(page_number)
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            'page_obj': page_obj,
+        # atualizando determinado contexto com novos dados
+        context.update({
             'page_title': 'Home - ',
-        }
-    )
+        })
+
+        # retorna contexto atualizado
+        return context
+
+# def index(request):
+#     # pegando no banco com objects as publicações public True em ordem decrescente
+#     posts = Post.objects.get_published()
+
+#     # mandando para a view post 9 posts.
+#     paginator = Paginator(posts, PER_PAGE)
+#     # pegando o número de páginas
+#     page_number = request.GET.get("page")
+#     # pegando a pagina atual
+#     page_obj = paginator.get_page(page_number)
+
+#     return render(
+#         request,
+#         'blog/pages/index.html',
+#         {
+#             'page_obj': page_obj,
+#             'page_title': 'Home - ',
+#         }
+#     )
 
 # view que exibe quem criou
 def created_by(request, author_pk):

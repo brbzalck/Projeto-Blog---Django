@@ -1,4 +1,5 @@
-{% if page_obj and page_obj.has_other_pages %}
+{% comment %} usando o is_paginated que vem do ListView {% endcomment %}
+{% if is_paginated %}
 {% comment %} verificando se tem página e outras páginas {% endcomment %}
 
 <div class="separator"></div>
