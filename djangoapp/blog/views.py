@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from blog.models import Post, Page
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -10,23 +10,14 @@ PER_PAGE = 9
 
 # sobrescrevendo list view
 class PostListView(ListView):
-    # definindo qual model(banco)
-    model = Post
     # definindo qual template utilizar na renderização
     template_name = 'blog/pages/index.html'
     # definindo como que vou acessar os dados no template(html)
     context_object_name = 'posts'
-    # colocando em ordem de criação(mais novo primeiro)
-    ordering = '-pk',
     # definindo quantas páginas por vez
     paginate_by = PER_PAGE
-    # query set padrão começa verificando se está publicada
+    # query set padrão começa verificando se está publicada(também define o model)
     queryset = Post.objects.get_published()
-    
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     queryset = queryset.filter(is_published=True)
-    #     return queryset
         
     # sobrescrevendo o método de ListView que pega o contexto que vai para o template
     def get_context_data(self, **kwargs):
@@ -40,26 +31,7 @@ class PostListView(ListView):
 
         # retorna contexto atualizado
         return context
-
-# def index(request):
-#     # pegando no banco com objects as publicações public True em ordem decrescente
-#     posts = Post.objects.get_published()
-
-#     # mandando para a view post 9 posts.
-#     paginator = Paginator(posts, PER_PAGE)
-#     # pegando o número de páginas
-#     page_number = request.GET.get("page")
-#     # pegando a pagina atual
-#     page_obj = paginator.get_page(page_number)
-
-#     return render(
-#         request,
-#         'blog/pages/index.html',
-#         {
-#             'page_obj': page_obj,
-#             'page_title': 'Home - ',
-#         }
-#     )
+    
 
 # view que exibe quem criou
 def created_by(request, author_pk):
@@ -98,6 +70,69 @@ def created_by(request, author_pk):
             'page_title': page_title,
         }
     )
+
+# aproveitando minha Classe List View para configurar o CreatedBy View
+class CreatedByListView(PostListView):
+    def __init__(self, **kwargs):
+        # garantindo que a construção básica de ListView seja feita
+        super().__init__(**kwargs)
+        # criando dicionário temporário para armazenar dados relacionados ao USER
+        self._temp_context = {}
+
+    def get_context_data(self, **kwargs):
+        # jogando o contexto atual para uma variável
+        ctx = super().get_context_data(**kwargs)
+
+        # pegando meu USER armazenado no _temp_context
+        user = self._temp_context['user']
+        # configura o nome do usuário com os dados do usuário armazenado no _temp_context
+        user_full_name = user.username
+
+        # se tiver first name, dale robertin
+        if user.first_name:
+            # concatenando primeiro e sobrenome na variável(editando ela)
+            user_full_name = f'{user.first_name} {user.last_name}'
+        # Concatenando a título da página com nome de usuário
+        page_title = 'Posts de ' + user_full_name + ' - '
+
+        # aproveitando e jogando o títilo da página para dentro do contexto
+        ctx.update({
+            'page_title': page_title,
+        })
+
+        # enfim retorna o contexto
+        return ctx
+    
+    # definindo queryset da view (já herdada com as configs da classe pai)
+    def get_queryset(self):
+        # salvando numa variável para edição
+        qs = super().get_queryset()
+        # filtrando os posts que forem a pk de created_by do banco = pk do user armazenado no _temp_context
+        qs = qs.filter(created_by__pk=self._temp_context['user'].pk)
+        # retorna query set
+        return qs
+
+    # sobrescrevendo get de ListView
+    def get(self, request, *args, **kwargs):
+        # pegando com get o ID de author_pk passado pela url
+        author_pk = self.kwargs.get('author_pk')
+        # pegando da table User a pk = que bate com a author_pk vinda da URL
+        user = User.objects.filter(pk=author_pk).first()
+
+        # se não existir usuário levanta um erro
+        if user is None:
+            # se não existir o User redireciona para o index
+            return redirect('blog:index')
+        
+        # atualizando o contexo temporário o author_pk e user
+        self._temp_context.update({
+            'author_pk': author_pk,
+            'user': user,
+        })
+
+        # processando requisição com ID e Usuário configurados para renderização
+        return super().get(request, *args, **kwargs)
+            
 
 # view que mostra os post com determinadas categorias
 def category(request, slug):
