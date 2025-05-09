@@ -4,7 +4,7 @@ from blog.models import Post, Page
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.http import Http404
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 PER_PAGE = 9
 
@@ -190,27 +190,33 @@ class SearchListView(PostListView):
         return super().get(request, *args, **kwargs)
 
 
-# view page que pega página publicada E vê qual slug do site é = slug da URL
-def page(request, slug):
-    page_obj = Page.objects.filter(is_published=True).filter(slug=slug).first()
+# detail view para exibir uma única página nesse caso
+class PageDetailView(DetailView):
+    # selecionando qual banco(table) a minha View vai trabalhar
+    model = Page
+    # selecionando qual template vai renderizar
+    template_name = 'blog/pages/page.html'
+    # selecionando a column da slug para o django procurar a página
+    slug_field = 'slug'
+    # em vez de acessar o 'objeto' por object acessa por 'page'
+    context_object_name = 'page'
 
-    # se não existir página levanta erro
-    if page_obj is None:
-        raise Http404()    
-
-    # pegando o título assiciado a página criada na admin
-    page_title = f'{page_obj.title} - Página - '
-
-    return render(
-        request,
-        'blog/pages/page.html',
-        {
-            # joga pro contexto o resultado da query
-            'page': page_obj,
-            # passando no contexto que vai para o renderização o nome da página
+    # modificando contexto de PageDetail
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        # separando qual página será exibida numa variável
+        page = self.get_object()
+        # pegando pela página o titulo dela para colocar como titulo de aba da mesma
+        page_title = f'{page.title} - Página - '
+        ctx.update({
             'page_title': page_title,
-        }
-    )
+        })
+        return ctx
+    
+    def get_queryset(self):
+        # nossa query padrão verifica se está publicado apenas como filtro.
+        return super().get_queryset().filter(is_published=True)
+
 
 def post(request, slug):
     # pegando do banco se estiver publicado onde a slug é igual a slug recebida da URL

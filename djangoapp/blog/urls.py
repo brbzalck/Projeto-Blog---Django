@@ -1,5 +1,5 @@
 from django.urls import path
-from blog.views import PostListView, post, page, CreatedByListView, CategoryListView, TagListView, SearchListView
+from blog.views import PostListView, post, PageDetailView, CreatedByListView, CategoryListView, TagListView, SearchListView
 
 # colocando nome no app para puxar as view mais fácil
 app_name = 'blog'
@@ -9,7 +9,7 @@ urlpatterns = [
     path('', PostListView.as_view(), name='index'),
     # caminho da url se o usuário clicar em algum post, + slug recebida pelo href post.slug, requisita view post
     path('post/<slug:slug>/', post, name='post'),
-    path('page/<slug:slug>/', page, name='page'),
+    path('page/<slug:slug>/', PageDetailView.as_view(), name='page'),
     # url created_by/id do criador/ , que puxa a view created_by de nome created_by
     path('created_by/<int:author_pk>/', CreatedByListView.as_view(), name='created_by'),
     path('category/<slug:slug>/', CategoryListView.as_view(), name='category'),
