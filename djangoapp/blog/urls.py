@@ -1,5 +1,5 @@
 from django.urls import path
-from blog.views import PostListView, post, page, CreatedByListView, CategoryListView, TagListView, search
+from blog.views import PostListView, post, page, CreatedByListView, CategoryListView, TagListView, SearchListView
 
 # colocando nome no app para puxar as view mais fácil
 app_name = 'blog'
@@ -15,5 +15,5 @@ urlpatterns = [
     path('category/<slug:slug>/', CategoryListView.as_view(), name='category'),
     # url da tag/slug, que puxa a view tag de nome tag
     path('tag/<slug:slug>/', TagListView.as_view(), name='tag'),
-    path('search/', search, name='search'),
+    path('search/', SearchListView.as_view(), name='search'),
 ]

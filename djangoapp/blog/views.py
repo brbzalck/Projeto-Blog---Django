@@ -145,36 +145,50 @@ class TagListView(PostListView):
         return ctx
 
 
-# view que mostra o resultado do search
-def search(request):
-    # o valor de pesquisa será pego na requisição do get de name 'search', com exclusão dos espaços em branco
-    search_value = request.GET.get('search', '').strip()
+class SearchListView(PostListView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # iniciando search_value vazio para guardar o valor que o usuário digitar
+        self._search_value = ''
 
-    # pegando no banco com objects as publicações public True E que contenha título, excerpt, e conteúdo = valor da pesquisa
-    posts = (
-        Post.objects.get_published()
-            .filter(
+    # método inicial que inicia bem no início da requisição
+    def setup(self, request, *args, **kwargs):
+        # pegando o valor do parâmetro search que vem na url e atribuindo para self._search_value
+        self._search_value = request.GET.get('search', '').strip()
+
+        return super().setup(request, *args, **kwargs)
+
+    # modificando a query
+    def get_queryset(self):
+        # colocando meu search_value numa variável para manipulação
+        search_value = self._search_value
+        # o filtro será a pesquisa do search_value nos títulos, excerpt e content feito pelo icontains
+        return super().get_queryset().filter(
                 Q(title__icontains=search_value) |
                 Q(excerpt__icontains=search_value) |
                 Q(content__icontains=search_value)
             )[:PER_PAGE]
-            # exibi somente 9
-        )
-    # título da página é o serach_value com o máximo de 30 caracteres
-    page_title = f'{search_value[:30]} - Search - '
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            # mandando o resultado da query para a render
-            'page_obj': posts,
-            # mandando o valor de pesquisa
+    
+    # modificando o contexto da serach
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        search_value = self._search_value
+        ctx.update({
+            # o título da página vai ser search value com máximo de 30 caracteres
+            'page_title': f'{search_value[:30]} - Search - ',
+            # valor de pesquisa para manipulação no header
             'search_value': search_value,
-            # passando no contexto que vai para o renderização o nome da página
-            'page_title': page_title,
-        }
-    )
+        })
+        return ctx
+    
+    # get para utilizar request no final da requisição
+    def get(self, request, *args, **kwargs):
+        # se não houver valor de pesquisa, redireciona para home do site
+        if self._search_value == '':
+            return redirect('blog:index')
+
+        return super().get(request, *args, **kwargs)
+
 
 # view page que pega página publicada E vê qual slug do site é = slug da URL
 def page(request, slug):
