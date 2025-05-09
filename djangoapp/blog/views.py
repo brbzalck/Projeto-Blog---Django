@@ -31,45 +31,7 @@ class PostListView(ListView):
 
         # retorna contexto atualizado
         return context
-    
 
-# view que exibe quem criou
-def created_by(request, author_pk):
-    # pegando o usuário do banco onde a pk da table é igual a pk do autor que vem da URL
-    user = User.objects.filter(pk=author_pk).first()
-
-    # se não existir usuário levanta um erro
-    if user is None:
-        raise Http404()
-
-    # pegando no banco com objects as publicações public True E que tenham a pk de quem criou = pk que vem da URL
-    posts = Post.objects.get_published().filter(created_by__pk=author_pk)
-    # criando um full name a partir do dado da column username
-    user_full_name = user.username
-
-    # se tiver first name, dale robertin
-    if user.first_name:
-        # concatenando primeiro e sobrenome na variável(editando ela)
-        user_full_name = f'{user.first_name} {user.last_name}'
-    # Concatenando a título da página com nome de usuário
-    page_title = 'Posts de ' + user_full_name + ' - '
-
-    # mandando para a view post 9 posts.
-    paginator = Paginator(posts, PER_PAGE)
-    # pegando o número de páginas
-    page_number = request.GET.get("page")
-    # pegando a pagina atual
-    page_obj = paginator.get_page(page_number)
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            'page_obj': page_obj,
-            # passando no contexto que vai para o renderização o nome da página
-            'page_title': page_title,
-        }
-    )
 
 # aproveitando minha Classe List View para configurar o CreatedBy View
 class CreatedByListView(PostListView):
@@ -158,62 +120,31 @@ class CategoryListView(PostListView):
         # retorna contexto atualizado
         return ctx
 
-# view que mostra os post com determinadas categorias
-def category(request, slug):
-    # pegando no banco com objects as publicações public True E que tenha a slug da categoria = slug qu vem da URL
-    posts = Post.objects.get_published().filter(category__slug=slug)
 
-    # mandando para a view post 9 posts.
-    paginator = Paginator(posts, PER_PAGE)
-    # pegando o número de páginas
-    page_number = request.GET.get("page")
-    # pegando a pagina atual
-    page_obj = paginator.get_page(page_number)
+class TagListView(PostListView):
+    # "permitir_vazio", quando false não deixe a página carregar se não tiver conteúdo mandando para 404
+    allow_empty = False
 
-    # se não existir categoria levanta erro
-    if len(page_obj) == 0:
-        raise Http404()    
+    # adicionando um filtro para a query de PostListView, onde a slug da tag no banco = slug recuperada pelos kwargs q ListView armazena
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            tags__slug=self.kwargs.get('slug')
+        )
+    # jogando o contexto da tag para ctx
+    def get_context_data(self, **kwargs):
+        # recuperando contexto para edição
+        ctx = super().get_context_data(**kwargs)
 
-    # título da página é pego pelo peimeiro post página onde a categoria associada a ele tem determinado nome
-    page_title = f'{page_obj[0].category.name} - Categoria - '
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            'page_obj': page_obj,
-            # passando no contexto que vai para o renderização o nome da página
+        # salvando o títilo da aba pelo primeiro post contido em object_list que armazena a tag associada, pegando o nome da primeira
+        page_title = f'{self.object_list[0].tags.first().name} - Tag - '
+        # atualizando o título da aba
+        ctx.update({
             'page_title': page_title,
-        }
-    )
-# view que mostra os post com determinadas tags
-def tag(request, slug):
-    # pegando no banco com objects as publicações public True E que tenha a slug da tag = slug qu vem da URL
-    posts = Post.objects.get_published().filter(tags__slug=slug)
+        })
+        # retorna contexto atualizado
+        return ctx
 
-    # mandando para a view post 9 posts.
-    paginator = Paginator(posts, PER_PAGE)
-    # pegando o número de páginas
-    page_number = request.GET.get("page")
-    # pegando a pagina atual
-    page_obj = paginator.get_page(page_number)
 
-    # se não existir tags levanta erro
-    if len(page_obj) == 0:
-        raise Http404()   
-     
-    # título da página é pego pelo peimeiro post da página onde a tag associada a ele tem determinado nome
-    page_title = f'{page_obj[0].tags.first().name} - Tags - '
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            'page_obj': page_obj,
-            # passando no contexto que vai para o renderização o nome da página
-            'page_title': page_title,
-        }
-    )
 # view que mostra o resultado do search
 def search(request):
     # o valor de pesquisa será pego na requisição do get de name 'search', com exclusão dos espaços em branco
