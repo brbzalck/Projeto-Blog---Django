@@ -132,7 +132,31 @@ class CreatedByListView(PostListView):
 
         # processando requisição com ID e Usuário configurados para renderização
         return super().get(request, *args, **kwargs)
-            
+
+
+# herda a lógica de listagem do PostListView, paginação, template, queryset base
+class CategoryListView(PostListView):
+    # "permitir_vazio", quando false não deixe a página carregar se não tiver conteúdo mandando para 404
+    allow_empty = False
+
+    # adicionando um filtro para a query de PostListView, onde a slug da categoria do banco = slug recuperada pelos kwargs q ListView armazena
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            category__slug=self.kwargs.get('slug')
+        )
+    # mudando o contexto da categoria
+    def get_context_data(self, **kwargs):
+        # recuperando contexto para edição
+        ctx = super().get_context_data(**kwargs)
+
+        # salvando o títilo da aba pelo primeiro post contido em object_list que armazena o nome da categoria
+        page_title = f'{self.object_list[0].category.name} - Categoria - '
+        # atualizando o título da aba
+        ctx.update({
+            'page_title': page_title,
+        })
+        # retorna contexto atualizado
+        return ctx
 
 # view que mostra os post com determinadas categorias
 def category(request, slug):
