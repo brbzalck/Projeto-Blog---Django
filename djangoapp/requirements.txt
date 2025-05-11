@@ -2,3 +2,5 @@ django
 psycopg2-binary
 pillow
 django-summernote
+python-dotenv
+django-axes
