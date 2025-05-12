@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: projeto-blog-django
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    buildCommand: ""
+    startCommand: commands.sh
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://projeto_blog_django_user:LebmwwvABJaAi2APvIRZHHpNAnYdFKNP@dpg-d0gvrhbuibrs73823u3g-a.oregon-postgres.render.com/projeto_blog_django
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: projeto-blog-django.onrender.com
