@@ -105,7 +105,14 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'projeto_blog_django',
+        'USER': 'projeto_blog_django_user',
+        'PASSWORD': 'LebmwwvABJaAi2APvIRZHHpNAnYdFKNP',
+        'HOST': 'dpg-d0gvrhbuibrs73823u3g-a.oregon-postgres.render.com',
+        'PORT': '5432',
+    }
 }
 
 
