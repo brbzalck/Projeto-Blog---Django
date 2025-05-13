@@ -34,6 +34,7 @@ EXPOSE 8000
 
 # criando ambiente virtual na raiz do projeto
 RUN python -m venv /venv && \
+  apk add --no-cache netcat-openbsd \
     # atualizando pip
   /venv/bin/pip install --upgrade pip && \
     # pegando os requerimentos do projeto
