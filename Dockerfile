@@ -34,19 +34,27 @@ EXPOSE 8000
 
 # criando ambiente virtual na raiz do projeto
 RUN python -m venv /venv && \
-  apk add --no-cache netcat-openbsd && \
+  apk add --no-cache netcat-openbsd \
+    # atualizando pip
   /venv/bin/pip install --upgrade pip && \
+    # pegando os requerimentos do projeto
   /venv/bin/pip install -r /djangoapp/requirements.txt && \
+    # adicionando um usuário, sem senha e sem home, de nome duser
   adduser --disabled-password --no-create-home duser && \
+    # criando a pasta static
   mkdir -p /data/web/static && \
+    # criando a pasta media
   mkdir -p /data/web/media/assets/favicon && \
   mkdir -p /data/web/media/posts && \
+    # modificando quem criou as pastas venv, static e media
   chown -R duser:duser /venv && \
   chown -R duser:duser /data/web/static && \
   chown -R duser:duser /data/web/media && \
+    # mudando a permissão das pastas para 755
   chmod -R 755 /data/web/static && \
   chmod -R 755 /data/web/media && \
-  chmod +x /scripts/*.sh
+    # +x para executar somento com o nome do arquivo
+  chmod -R +x /scripts
 
 # Adiciona a pasta scripts e venv/bin 
 # no $PATH do container.
