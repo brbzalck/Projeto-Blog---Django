@@ -63,4 +63,4 @@ ENV PATH="/scripts:/venv/bin:$PATH"
 USER duser
 
 # Executa o arquivo scripts/commands.sh
-CMD ["/scripts/commands.sh"]
+CMD ["scripts/commands.sh"]
