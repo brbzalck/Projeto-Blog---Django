@@ -8,14 +8,9 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 # Extrai o host e a porta corretamente
-POSTGRES_HOST=$(echo $DATABASE_URL | sed -E 's|.*://([^:/]+).*|\1|')   # Extrai apenas o host
-POSTGRES_PORT=$(echo $DATABASE_URL | sed -E 's|.*:([0-9]+).*|\1|')    # Extrai apenas a porta
+POSTGRES_HOST=$(echo $DATABASE_URL | sed -E 's|.*://([^:/]+).*|\1|')
+POSTGRES_PORT=$(echo $DATABASE_URL | sed -E 's|.*:([0-9]+).*|\1|')
 
-# Exibe os valores para debug
-echo "Host do PostgreSQL: $POSTGRES_HOST"
-echo "Porta do PostgreSQL: $POSTGRES_PORT"
-
-# Aguarda até que o serviço do PostgreSQL esteja disponível
 while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do
     echo "Aguardando inicialização do banco de dados PostgreSQL ($POSTGRES_HOST:$POSTGRES_PORT)..."
     sleep 2
