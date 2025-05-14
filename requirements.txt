@@ -6,4 +6,3 @@ python-dotenv
 django-axes
 dj-database-url
 guicorn
-netcat
