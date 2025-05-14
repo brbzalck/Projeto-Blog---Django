@@ -62,5 +62,8 @@ ENV PATH="/scripts:/venv/bin:$PATH"
 # Muda o usuário para duser
 # USER duser
 
-# Executa o arquivo scripts/commands.sh
-CMD ["commands.sh"]
+# Verifique se os arquivos foram copiados corretamente
+RUN ls -la /scripts
+
+# Use o caminho absoluto e formato JSON para o CMD
+CMD ["/bin/sh", "/scripts/commands.sh"]
