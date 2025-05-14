@@ -4,4 +4,3 @@ pillow
 django-summernote
 python-dotenv
 django-axes
-dj-database-url
